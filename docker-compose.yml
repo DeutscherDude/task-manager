@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:14.3-alpine
+    container_name: postgres
+    restart: always
+    ports:
+      - published: ${POSTGRES_PORT:-27017}
+        target: ${POSTGRES_PORT:-27017}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER?error}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?error}
+      POSTGRES_DB: ${POSTGRES_DB?error}
+      POSTGRES_PORT: ${POSTGRES_PORT?error}
+  app:
+    command: node ./dist/index.js
+    container_name: app
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - published: ${SERVER_PORT:-3030}
+        target: ${SERVER_PORT:-3030}
+    volumes:
+      - .:/app/
+    depends_on:
+      - db
+    environment:
+      SERVER_PORT: ${SERVER_PORT?error}
+      NODE_ENV: ${NODE_ENV?error}
+volumes:
+  db-data:
+    driver: local
