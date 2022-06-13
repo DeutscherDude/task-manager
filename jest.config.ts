@@ -9,7 +9,7 @@ const config: Config.InitialOptions = {
         "^.+\\.ts?$": "ts-jest",
     },
     collectCoverageFrom: ["src/**/*.ts", "!src/**/*jest.config.ts", "!src/**/index.ts"],
-    coveragePathIgnorePatterns: ["/node_modules/", "/dist/"],
+    // coveragePathIgnorePatterns: ["/node_modules/", "/dist/"],
     setupFiles: [
         'dotenv/config'
     ]
