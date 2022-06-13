@@ -1,12 +1,9 @@
-import * as request from 'supertest';
-import app from '../../index';
-import { connect } from '../psqlConnect';
-
+import db from '../psqlConnect';
 
 describe('psqlConnect connection tests', () => {
-    it('should connect to psql', async() => {
-        await connect();
-        expect(true).toBe(true);
+    it('should connect to psql', async () => {
+        db.runMigrations();
+        
     })
 })
 

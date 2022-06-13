@@ -1,3 +1,5 @@
+CREATE DATABASE task_manager;
+
 CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY,
     username TEXT NOT NULL,
