@@ -15,6 +15,7 @@ In order to clone this repository, please use the following command:
     POSTGRES_PASSWORD=
     POSTGRES_PORT=
     POSTGRES_DB=
+    POSTGRES_POOL_SIZE=
     SERVER_PORT=
 
 ## Starting the dockerized aplication

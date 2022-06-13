@@ -18,7 +18,7 @@ services:
     expose:
       - ${POSTGRES_PORT:-6500}
     command:
-      -p 6500
+      -p ${POSTGRES_PORT:-6500}
   app:
     command: node ./dist/index.js
     container_name: app
