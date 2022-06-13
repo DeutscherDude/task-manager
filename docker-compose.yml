@@ -15,6 +15,10 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?error}
       POSTGRES_DB: ${POSTGRES_DB?error}
       POSTGRES_PORT: ${POSTGRES_PORT?error}
+    expose:
+      - ${POSTGRES_PORT:-6500}
+    command:
+      -p 6500
   app:
     command: node ./dist/index.js
     container_name: app
