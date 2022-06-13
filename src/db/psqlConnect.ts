@@ -1,6 +1,4 @@
-import path from 'path';
-import { Pool } from 'pg';
-import { migrate } from 'postgres-migrations';
+import { Pool, PoolClient, QueryResult } from 'pg';
 
 const { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT, POSTGRES_POOL_SIZE } = process.env;
 
@@ -17,17 +15,19 @@ const pool = new Pool({
     connectionTimeoutMillis: 3000,
 });
 
-const db = {
-    runMigrations: async function (): Promise<void> {
-        const client = await pool.connect();
-        try {
-            await migrate({ client }, path.resolve(__dirname, 'migrations/sql'));
-        } catch (err) {
-            console.log('migration failed', err);
-        } finally {
-            client.release()
-        }
-    },
+async function query(text: string, params: string[], callback: (err: Error, res: QueryResult) => void) {
+    return pool.query(text, params, (err: Error, res) => {
+        callback(err, res);
+    });
+};
+
+async function getClient(callback: (err: Error, client: PoolClient, done: (release?: any) => void) => void) {
+    pool.connect((err, client, done) => {
+        callback(err, client, done);
+    })
 }
 
-export default db;
+export {
+    query,
+    getClient
+};

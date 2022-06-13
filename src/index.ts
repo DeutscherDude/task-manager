@@ -1,12 +1,14 @@
-import express, { Request, Response } from 'express';
+import app from './app';
 
-const app = express();
-const port = process.env.PORT || 3000;
+const start = (port: number) => {
+    try {
+        app.listen(port, () => {
+            console.log(`Listening on port ${port}...`);
+        });
+    } catch (err) {
+        console.log(err);
+        process.exit();
+    }
+};
 
-app.get('/hello', (req: Request, res: Response) => {
-    res.send('Task Manager App');
-})
-
-app.listen(port, console.log(`Listening on port ${port}...`)!);
-
-export default app;
+start(Number(process.env.SERVER_PORT));
