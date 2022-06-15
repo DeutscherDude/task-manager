@@ -34,6 +34,11 @@ services:
     environment:
       SERVER_PORT: ${SERVER_PORT?error}
       NODE_ENV: ${NODE_ENV?error}
+      POSTGRES_USER: ${POSTGRES_USER?error}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?error}
+      POSTGRES_DB: ${POSTGRES_DB?error}
+      POSTGRES_PORT: ${POSTGRES_PORT?error}
+      POSTGRES_HOST: ${POSTGRES_HOST?error}
 volumes:
   db-data:
     driver: local

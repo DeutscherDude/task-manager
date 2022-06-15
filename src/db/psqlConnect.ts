@@ -1,16 +1,13 @@
 import { Pool, PoolClient, QueryResult } from 'pg';
-
-const { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_PORT, POSTGRES_POOL_SIZE } = process.env;
-
-let parsedPort = Number(POSTGRES_PORT!);
+import { provideStringEnvVar } from '../util/envProvider';
 
 const pool = new Pool({
-    user: POSTGRES_USER,
-    password: POSTGRES_PASSWORD,
-    database: 'watykan',
-    host: 'localhost',
-    port: parsedPort,
-    max: Number(POSTGRES_POOL_SIZE),
+    user: provideStringEnvVar('POSTGRES_USER'),
+    password: provideStringEnvVar('POSTGRES_PASSWORD'),
+    database: provideStringEnvVar('POSTGRES_DB'),
+    host: 'db',
+    port: Number(provideStringEnvVar('POSTGRES_PORT')),
+    max: Number(provideStringEnvVar('POSTGRES_POOL_SIZE')),
     idleTimeoutMillis: 3000,
     connectionTimeoutMillis: 3000,
 });
@@ -21,9 +18,14 @@ pool.on('error', (err, client) => {
 })
 
 async function query(text: string, params: (string | number)[], callback: (err: Error, res: QueryResult) => void) {
-    return pool.query(text, params, (err: Error, res) => {
-        callback(err, res);
-    });
+    return pool
+        .connect()
+        .then(client => {
+            client.query(text, params, (err, res) => {
+                client.release();
+                callback(err, res);
+            })
+        })
 };
 
 async function getClient(callback: (err: Error, client: PoolClient, done: (release?: any) => void) => void) {

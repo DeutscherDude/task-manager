@@ -51,7 +51,7 @@ export const getUserById = asyncHandler(async (req: Request, res: Response) => {
  * @param res Response object
  */
 export const createUser = asyncHandler(async (req: Request, res: Response) => {
-    await query('INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *', [req.body.name, req.body.email, req.body.password], (err, results) => {
+    await query('INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *', [req.body.name, req.body.email, req.body.password], (err, results) => {
         if (err) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: "Internal server error",
