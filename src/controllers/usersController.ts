@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { query } from './../db/psqlConnect';
 import { StatusCodes } from './../util/statusCodes';
+import asyncHandler from "express-async-handler"
 
 /**
  * @route
@@ -9,17 +10,18 @@ import { StatusCodes } from './../util/statusCodes';
  * @param req Request object
  * @param res Response object
  */
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = asyncHandler(async (req: Request, res: Response) => {
     await query('SELECT * FROM users', [], (err, results) => {
         if (err) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: "Internal server error",
                 error: err
             });
+        } else {
+            return res.status(StatusCodes.ACCEPTED).json(results.rows);
         }
-        res.status(StatusCodes.ACCEPTED).json(results.rows);
     });
-};
+});
 
 /**
  * @route
@@ -28,17 +30,18 @@ export const getUsers = async (req: Request, res: Response) => {
  * @param req Request object
  * @param res Response object
  */
-export const getUserById = async (req: Request, res: Response) => {
-    await query('SELECT * FROM users WHERE id = $1', [req.params.id], (err, results) => {
+export const getUserById = asyncHandler(async (req: Request, res: Response) => {
+    await query('SELECT * FROM users WHERE user_id = $1', [parseInt(req.params.id)], (err, results) => {
         if (err) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: "Internal server error",
                 error: err
             });
+        } else {
+            return res.status(StatusCodes.ACCEPTED).json(results.rows);
         }
-        res.status(StatusCodes.ACCEPTED).json(results.rows);
     });
-}
+});
 
 /**
  * @route
@@ -47,19 +50,18 @@ export const getUserById = async (req: Request, res: Response) => {
  * @param req Request object
  * @param res Response object
  */
-export const createUser = async (req:Request, res: Response) => {
-    await query('INSERT INTO users(username, password) VALUES($1, $2)', [req.body.name, req.body.password], (err, results) => {
+export const createUser = asyncHandler(async (req: Request, res: Response) => {
+    await query('INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *', [req.body.name, req.body.email, req.body.password], (err, results) => {
         if (err) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: "Internal server error",
                 error: err
             });
+        } else {
+            return res.status(StatusCodes.ACCEPTED).json(results.rows[0]);
         }
-        res.status(StatusCodes.ACCEPTED).json({
-            message: "User created"
-        });
-    })
-}
+    });
+});
 
 /**
  * @route
@@ -68,16 +70,17 @@ export const createUser = async (req:Request, res: Response) => {
  * @param req Request object
  * @param res Response object
  */
-export const deleteUserById = async (req: Request, res: Response) => {
-    await query('DELETE FROM users WHERE user_id=$1', [req.params.id], (err, results) => {
+export const deleteUserById = asyncHandler(async (req: Request, res: Response) => {
+    await query('DELETE FROM users WHERE user_id=$1', [req.body.id], (err, results) => {
         if (err) {
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: "Internal server error",
                 error: err
             })
+        } else {
+            return res.status(StatusCodes.ACCEPTED).json({
+                message: "User deleted"
+            });
         }
-        res.status(StatusCodes.ACCEPTED).json({
-            message: "User deleted"
-        });
     });
-}
+});

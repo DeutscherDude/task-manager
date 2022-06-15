@@ -1,11 +1,11 @@
 import { StatusCodes } from '../../util/statusCodes';
 import { getUsers, getUserById, createUser, deleteUserById } from "../usersController";
-jest.mock('express');
-
+import { NextFunction } from 'express';
 
 describe("getUsers", () => {
     let mockReq: any
     let mockRes: any;
+    const next: NextFunction = jest.fn();
 
     beforeEach(() => {
         mockReq = {};
@@ -21,7 +21,7 @@ describe("getUsers", () => {
 
     it("should return an array of users", async () => {
         new Promise(() => {
-            getUsers(mockReq, mockRes)
+            getUsers(mockReq, mockRes, next)
         }).then(() => {
             expect(mockRes.status).toHaveBeenCalled();
             expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.ACCEPTED);
@@ -36,7 +36,7 @@ describe("getUsers", () => {
             }
         }
         new Promise(() => {
-            getUserById(mockReq, mockRes)
+            getUserById(mockReq, mockRes, next)
         }).then(() => {
             expect(mockRes.status).toHaveBeenCalled();
             expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.ACCEPTED);
@@ -59,7 +59,7 @@ describe("getUsers", () => {
         }
 
         new Promise(() => {
-            createUser(mockReq, mockRes);
+            createUser(mockReq, mockRes, next);
         }).then(() => {
             expect(mockRes.status).toHaveBeenCalled();
             expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.CREATED);
@@ -69,13 +69,13 @@ describe("getUsers", () => {
 
     it('should delete a user by id', async () => {
         mockReq = {
-            params: {
-                id: 4
+            body: {
+                user_id: 4
             }
         }
         new Promise(() => {
-            deleteUserById(mockReq, mockRes);
-        }).then(() => { 
+            deleteUserById(mockReq, mockRes, next);
+        }).then(() => {
             expect(mockRes.status).toHaveBeenCalled();
             expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.ACCEPTED);
         })

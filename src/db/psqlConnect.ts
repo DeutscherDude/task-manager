@@ -15,7 +15,12 @@ const pool = new Pool({
     connectionTimeoutMillis: 3000,
 });
 
-async function query(text: string, params: string[], callback: (err: Error, res: QueryResult) => void) {
+pool.on('error', (err, client) => {
+    console.error('Unexpected error on idle client', err);
+    process.exit(-1);
+})
+
+async function query(text: string, params: (string | number)[], callback: (err: Error, res: QueryResult) => void) {
     return pool.query(text, params, (err: Error, res) => {
         callback(err, res);
     });

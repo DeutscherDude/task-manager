@@ -19,17 +19,16 @@ services:
       - ${POSTGRES_PORT:-6500}
     command:
       -p ${POSTGRES_PORT:-6500}
-  app:
-    command: node ./dist/index.js
-    container_name: app
+  api:
+    container_name: api
     build: 
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.api
     ports:
-      - published: ${SERVER_PORT:-3030}
-        target: ${SERVER_PORT:-3030}
+      - published: ${SERVER_PORT:-3000}
+        target: ${SERVER_PORT:-3000}
     volumes:
-      - .:/app/
+      - .:/api/
     depends_on:
       - db
     environment:
