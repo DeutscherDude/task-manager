@@ -1,8 +1,15 @@
 import { StatusCodes } from '../../util/statusCodes';
-import { getUsers, getUserById, createUser, deleteUserById } from "../usersController";
+import {
+    getUsers,
+    getUserById, 
+    createUser, 
+    deleteUserById,
+    patchUser,
+    putUser
+} from "../usersController";
 import { NextFunction } from 'express';
 
-describe("getUsers", () => {
+describe("usersController routing test", () => {
     let mockReq: any
     let mockRes: any;
     const next: NextFunction = jest.fn();
@@ -80,5 +87,54 @@ describe("getUsers", () => {
             expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.ACCEPTED);
         })
     })
+
+    it('should patch a user', async() => {
+        mockReq = {
+            params: {
+                user_id: 1
+            },
+            body: {
+                username: 'Gejwid',
+                password: 'LolisAreTheBest'
+            }
+        }
+        new Promise(() => {
+            patchUser(mockReq, mockRes, next);
+        }).then(() => {
+            expect(mockRes.status).toHaveBeenCalled();
+            expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.ACCEPTED);
+            expect(mockRes.json).toHaveBeenCalled();
+            expect(mockRes.json).toHaveBeenCalledWith({
+                user_id: 1,
+                name: 'Gejwid',
+                password: 'LolisAreTheBest'
+            });
+        });
+    });
+
+    it('should put a user', async() => {
+        mockReq = {
+            params: {
+                user_id: 1
+            },
+            body: {
+                username: 'Gejwid',
+                password: 'GrateMyFaceOnYourAbs'
+            }
+        }
+        new Promise(() => {
+            putUser(mockReq, mockRes, next);
+        }
+        ).then(() => {
+            expect(mockRes.status).toHaveBeenCalled();
+            expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.ACCEPTED);
+            expect(mockRes.json).toHaveBeenCalled();
+            expect(mockRes.json).toHaveBeenCalledWith({
+                user_id: 1,
+                name: 'Gejwid',
+                password: 'GrateMyFaceOnYourAbs'
+            });
+        });
+    });
 }
 );

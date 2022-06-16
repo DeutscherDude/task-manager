@@ -1,6 +1,13 @@
 import express from 'express';
 import logger from './../middleware/logger';
-import { getUsers, getUserById, createUser } from '../controllers/usersController';
+import { 
+    getUsers, 
+    getUserById, 
+    createUser, 
+    patchUser,
+    putUser, 
+    deleteUserById 
+} from '../controllers/usersController';
 
 /**
  * @desc Router for users. Handles all requests to /users
@@ -9,13 +16,15 @@ import { getUsers, getUserById, createUser } from '../controllers/usersControlle
 const router = express.Router();
 
 router
-    .route('/')
-    .get(logger, getUsers)
-    .post(logger, createUser);
+    .route('/:id') 
+    .get(logger, getUserById)
+    .patch(logger, patchUser)
+    .put(logger, putUser);
 
 router
-    .route('/:id') 
-    .get(logger, getUserById);
-
+    .route('/')
+    .get(logger, getUsers)
+    .post(logger, createUser)
+    .delete(logger, deleteUserById)
 
 export { router as usersRouter };
