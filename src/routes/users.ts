@@ -19,12 +19,12 @@ router
     .route('/:id') 
     .get(logger, getUserById)
     .patch(logger, patchUser)
-    .put(logger, putUser);
+    .put(logger, putUser)
+    .delete(logger, deleteUserById);
 
 router
     .route('/')
     .get(logger, getUsers)
     .post(logger, createUser)
-    .delete(logger, deleteUserById)
 
 export { router as usersRouter };
