@@ -6,8 +6,8 @@ import {
     getTasks,
     patchTask,
     putTask
-} from 'src/controllers/tasksController';
-import logger from 'src/middleware/logger';
+} from '../controllers/tasksController';
+import logger from '../middleware/logger';
 
 const router = Router();
 

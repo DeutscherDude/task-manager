@@ -1,5 +1,5 @@
 import { NextFunction } from 'express';
-import { StatusCodes } from '../../util/statusCodes';
+// import { StatusCodes } from '../../util/statusCodes';
 import {
     getTasks,
     getTaskById,
@@ -10,53 +10,69 @@ import {
 } from '../tasksController';
 
 describe('tasksController tests', () => {
-    let mockReq: any
+    let mockReq: any;
     let mockRes: any;
     const next: NextFunction = jest.fn();
 
-    beforeEach(() => {
+
+    beforeEach(async () => {
         mockReq = {};
         mockRes = {
             status: jest.fn((num: Number) => {
 
-            }
-            ).mockReturnThis(),
+            }).mockReturnThis(),
             json: jest.fn((...r) => {
-                return mockRes;
-            }
-            ).mockReturnThis()
+
+            }).mockReturnThis()
         };
     });
 
-    it('GET all tasks', async () => {
-        new Promise(() => {
-            getTasks(mockReq, mockRes, next)})
-        .then(() => {
-            expect(mockRes.status).toHaveBeenCalled();
-            expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.OK);
-            expect(mockRes.json).toHaveBeenCalled();
-        });
+    it('returns all tasks from the db', async () => {
+        await getTasks(mockReq, mockRes);
+            // .then(() => {
+            //     expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.ACCEPTED);
+            //     expect(mockRes.json).toHaveBeenCalled();
+            // })
     });
 
-    it('GET a task by ID', async () => {
-        getTaskById(mockReq, mockRes, next);
+    it('returns a task by given id', async () => {
+        getTaskById(mockReq, mockRes);
+        // .then(() => {
+        //     expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.METHOD_NOT_ALLOWED);
+        //     expect(mockRes.json).toHaveBeenCalledWith({
+        //         message: 'Method not yet implemented'
+        //     });
+        // })
     });
 
-    it('POST a task', async () => {
-        createTask(mockReq, mockRes, next);
+    it('Create a task given all correct fields', async () => {
+        mockReq = {
+            body: {
+                fk_user_id: 4,
+                title: 'Get David a loli',
+                description: 'David is a huge loli lover, hence getting him a loli...',
+            }
+        }
+        await createTask(mockReq, mockRes).then(() => {
+            expect(mockRes.status)
+            // .toHaveBeenCalledWith(StatusCodes.ACCEPTED);
+            // expect(mockRes.json).toHaveBeenCalledWith({
+            //     message: 'Indeed David is a huge loli'
+            // })
+        })
     });
 
     it('DELETE a task by ID', async () => {
-        deleteTaskById(mockReq, mockRes, next);
+        await deleteTaskById(mockReq, mockRes, next);
     });
 
     it('PATCH a task', async () => {
-        patchTask(mockReq, mockRes, next);
+        await patchTask(mockReq, mockRes, next);
     })
 
     it('PUT a task', async () => {
-        putTask(mockReq, mockRes, next);
+        await putTask(mockReq, mockRes, next);
     });
 
-})
+});
 

@@ -79,7 +79,7 @@ export const getUserById = asyncHandler(async (req: Request, res: Response) => {
  * @param res Response object
  */
 export const createUser = asyncHandler(async (req: Request, res: Response) => {
-    await query('INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *', [req.body.name, req.body.password], (err, results) => {
+    await query('INSERT INTO users (username, password) VALUES ($1, $2)', [req.body.name, req.body.password], (err, results) => {
         if (err) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: "Internal server error",
@@ -138,7 +138,7 @@ export const patchUser = asyncHandler(async (req: Request, res: Response) => {
  * @access Private
  */
 export const putUser = asyncHandler(async (req: Request, res: Response) => {
-    await query('UPDATE users SET username=$1, password=$2 WHERE user_id=$3 RETURNING *', [req.body.name, req.body.password, req.params.id], (err, results) => {
+    await query('UPDATE users SET username=$1, password=$2 WHERE user_id=$3', [req.body.name, req.body.password, req.params.id], (err, results) => {
         if (err) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: "Internal server error",

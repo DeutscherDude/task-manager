@@ -13,8 +13,7 @@ const pool = new Pool({
 });
 
 pool.on('error', (err, client) => {
-    console.error('Unexpected error on idle client', err);
-    process.exit(-1);
+    return err;
 })
 
 /**
@@ -26,8 +25,11 @@ pool.on('error', (err, client) => {
  */
 async function query(text: string, params: (string | number)[], callback: (err: Error, res: QueryResult) => void) {
     return pool
-            .query(text, params, (err, res) => {
-                callback(err, res);
+        .on('error',(err, client) => {
+            return err;
+        })
+        .query(text, params, (err, res) => {
+            callback(err, res);
         })
 };
 
