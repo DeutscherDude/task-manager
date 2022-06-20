@@ -1,30 +1,24 @@
-import express from 'express';
+import express, { Router } from 'express';
 import logger from './../middleware/logger';
-import { 
-    getUsers, 
-    getUserById, 
-    createUser, 
-    patchUser,
-    putUser, 
-    deleteUserById 
-} from '../controllers/usersController';
 
-/**
- * @desc Router for users. Handles all requests to /users
- * @return {void} void
- */
-const router = express.Router();
+export default function (database: any): Router {
+    /**
+     * @desc Router for users. Handles all requests to /users
+     * @return {void} void
+     */
+    const router = express.Router();
 
-router
-    .route('/:id') 
-    .get(logger, getUserById)
-    .patch(logger, patchUser)
-    .put(logger, putUser)
-    .delete(logger, deleteUserById);
+    router
+        .route('/:id')
+        .get(logger, database.getUserById)
+        .patch(logger, database.patchUser)
+        .put(logger, database.putUser)
+        .delete(logger, database.deleteUserById);
 
-router
-    .route('/')
-    .get(logger, getUsers)
-    .post(logger, createUser)
+    router
+        .route('/')
+        .get(logger, database.getUsers)
+        .post(logger, database.createUser);
 
-export { router as usersRouter };
+    return router;
+}

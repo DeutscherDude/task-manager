@@ -9,4 +9,4 @@ COPY . ./
 
 RUN npx tsc --project tsconfig.json
 
-CMD ["node", "./dist/src/index.js"]
+CMD ["node", "./dist/src/server.js"]
