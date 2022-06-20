@@ -1,4 +1,5 @@
 import { newDb } from 'pg-mem';
+import { StatusCodes } from '../util/statusCodes';
 
 const db = newDb();
 db.public.none(`
@@ -54,7 +55,7 @@ export const backup = db.backup();
 export const mockTasksController = {
     getTasks: (mockReq: any, mockRes: any) => {
         const results = db.public.query('SELECT * FROM tasks;')
-        return mockRes.status(200).json({
+        return mockRes.status(StatusCodes.OK).json({
             message: 'Tasks fetched successfully',
             vals: results.rows
         })
@@ -92,14 +93,21 @@ export const mockUsersController = {
         --sql
         SELECT * FROM users;
         `)
-        return mockRes.status(200).json({
+        return mockRes.status(StatusCodes.OK).json({
             message: 'Users fetched successfully',
             vals: results
         });
     },
     getUserById: (mockReq: any, mockRes: any) => {
-        return mockRes.status(200).json({
-
+        if (!/[(0-9)]/.test(mockReq.params.id)) {
+            return mockRes.status(StatusCodes.BAD_REQUEST).json({
+                message: 'Invalid user id'
+            })
+        }
+        const results = db.public.query(`SELECT * FROM users WHERE user_id = ${mockReq.params.id}`)
+        return mockRes.status(StatusCodes.OK).json({
+            message: 'User fetched successfully',
+            vals: results
         })
     },
     createUser: (mockReq: any, mockRes: any) => {
