@@ -13,7 +13,7 @@ describe('Users Routes Tests', () => {
         app = makeApp(mockTasksController, mockUsersController) as Application;
     })
 
-    describe('GET /api/users returns all tasks', () => {
+    describe('GET /api/users returns all users', () => {
         it('should return status 200 and three users', async () => {
             const res = await request(app).get('/api/users')
                 .set('Accept', 'application/json')
@@ -23,6 +23,9 @@ describe('Users Routes Tests', () => {
                 message: 'Users fetched successfully',
                 vals: {
                     rows: [
+                        {
+
+                        },
                         {
 
                         },
@@ -71,10 +74,46 @@ describe('Users Routes Tests', () => {
         it('should return status 200 and username, given all correct values', async () => {
             const res = await request(app).post('/api/users')
                 .set('Accept', 'application/json')
-                .send({ username: 'Zdzislaw', password: 'WhereAreMyBallsSummers?'})
-                .expect('Content-Type', /json/);
+                .send({
+                    username: 'Kok',
+                    password: 'WhereAreMyBallsSummers?'
+                });
             expect(res.status).toBe(200);
             expect(res.body.message).toBe('User created successfully');
+        })
+
+        it('should return status code 400, given no username', async () => {
+            const res = await request(app).post('/api/users')
+                .set('Accept', 'application/json')
+                .send({ password: "WhereAreMyBalls?!" });
+            expect(res.status).toBe(400);
+            expect(res.body.message).toBe('Invalid request. Check username and password details');
+        })
+
+        it('should return status code 400, given no password', async () => {
+            const res = await request(app).post('/api/users')
+                .set('Accept', 'application/json')
+                .send({ username: 'Zdzislaw' });
+            expect(res.status).toBe(400);
+            expect(res.body.message).toBe('Invalid request. Check username and password details');
+        })
+
+        it('should not create a user with a username that is already taken', async () => {
+            const res = await request(app).post('/api/users')
+                .set('Accept', 'application/json')
+                .send({ username: 'Zdzislaw', password: 'GoodGod' });
+            expect(res.status).toBe(400);
+
+        })
+
+    })
+
+    describe('DELETE /api/users deletes a user', () => {
+        it('should delete a user given a valid user_id', async () => {
+            const res = await request(app).delete('/api/users/1')
+                .set('Accept', 'application/json');
+            expect(res.status).toBe(200);
+            expect(res.body.message).toBe('User successfully deleted');
         })
     })
 

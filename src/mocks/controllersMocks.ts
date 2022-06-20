@@ -1,4 +1,4 @@
-import { newDb } from 'pg-mem';
+import { newDb, QueryResult } from 'pg-mem';
 import { StatusCodes } from '../util/statusCodes';
 
 const db = newDb();
@@ -31,7 +31,8 @@ db.public.none(`
 INSERT INTO users(username, password)
 VALUES('Stefan', 'JakubIsLebowski'),
     ('John', 'penis'),
-    ('TheDude', 'weed');
+    ('TheDude', 'weed'),
+    ('Zdzislaw', 'GoodGod');
 `)
 
 db.public.none(`
@@ -110,21 +111,37 @@ export const mockUsersController = {
             vals: results
         })
     },
-    createUser: (mockReq: any, mockRes: any) => {
-        if(mockReq.body.username && mockReq.body.password) {
+    createUser: async (mockReq: any, mockRes: any) => {
+        let username_taken: boolean | QueryResult = false;
+
+        if (mockReq.body.username === undefined || mockReq.body.password === undefined) {
+            return mockRes.status(StatusCodes.BAD_REQUEST).json({
+                message: 'Invalid request. Check username and password details'
+            })
+        }
+
+        if (mockReq.body.username && mockReq.body.password) {
+            username_taken = db.public.query(`SELECT * FROM users WHERE username = '${mockReq.body.username}'`).rowCount > 0;
+
+        }
+
+        if (!username_taken) {
             const result = db.public.query(`INSERT INTO users(username, password) VALUES ('${mockReq.body.username}', '${mockReq.body.password}')`)
-            return mockRes.status(200).json({
+            return mockRes.status(StatusCodes.OK).json({
                 message: 'User created successfully',
                 vals: result
             })
         }
+
         return mockRes.status(StatusCodes.BAD_REQUEST).json({
-            message: 'Invalid request. Check username and password details'
+            message: 'Username is already taken'
         })
+
     },
     deleteUserById: (mockReq: any, mockRes: any) => {
-        return mockRes.status(200).json({
-
+        db.public.query(`DELETE FROM users WHERE user_id = '${mockReq.params.id}'`);
+        return mockRes.status(StatusCodes.OK).json({
+            message: 'User successfully deleted'
         })
     },
     patchUser: (mockReq: any, mockRes: any) => {
