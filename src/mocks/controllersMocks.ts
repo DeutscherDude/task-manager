@@ -111,8 +111,15 @@ export const mockUsersController = {
         })
     },
     createUser: (mockReq: any, mockRes: any) => {
-        return mockRes.status(200).json({
-
+        if(mockReq.body.username && mockReq.body.password) {
+            const result = db.public.query(`INSERT INTO users(username, password) VALUES ('${mockReq.body.username}', '${mockReq.body.password}')`)
+            return mockRes.status(200).json({
+                message: 'User created successfully',
+                vals: result
+            })
+        }
+        return mockRes.status(StatusCodes.BAD_REQUEST).json({
+            message: 'Invalid request. Check username and password details'
         })
     },
     deleteUserById: (mockReq: any, mockRes: any) => {

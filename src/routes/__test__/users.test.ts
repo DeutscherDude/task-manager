@@ -65,7 +65,17 @@ describe('Users Routes Tests', () => {
                 message: 'Invalid user id'
             });
         })
+    })
 
+    describe('POST /api/users create a user', () => {
+        it('should return status 200 and username, given all correct values', async () => {
+            const res = await request(app).post('/api/users')
+                .set('Accept', 'application/json')
+                .send({ username: 'Zdzislaw', password: 'WhereAreMyBallsSummers?'})
+                .expect('Content-Type', /json/);
+            expect(res.status).toBe(200);
+            expect(res.body.message).toBe('User created successfully');
+        })
     })
 
 })
