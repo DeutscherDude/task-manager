@@ -114,6 +114,9 @@ export const mockUsersController = {
         --sql
         SELECT * FROM users;
         `)
+
+        console.log(mockReq.baseUrl);
+
         return mockRes.status(StatusCodes.OK).json({
             message: 'Users fetched successfully',
             vals: results
