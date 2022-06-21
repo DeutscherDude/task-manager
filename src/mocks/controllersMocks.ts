@@ -88,6 +88,26 @@ export const mockTasksController = {
     }
 }
 
+type User = {
+    id: number,
+    username: string,
+    password: string,
+    created_at: string,
+    updated_at: string
+}
+
+const buildPatchedQuery = (table: string, id: number, data: User) => {
+    if (Object.keys(data).length === 0) return null;
+    let query = `UPDATE ${table} SET`;
+    Object.entries(data).forEach(([key, value]) => {
+        const valueToSet = typeof data[key as keyof User] === 'string' ? `'${value}'` : value;
+        query += ` ${key} = ${valueToSet},`;
+    });
+    query = query.slice(0, -1);
+    query += ` WHERE user_id = ${id} RETURNING *`;
+    return query;
+}
+
 export const mockUsersController = {
     getUsers: (mockReq: any, mockRes: any) => {
         const results = db.public.query(`
@@ -144,14 +164,49 @@ export const mockUsersController = {
             message: 'User successfully deleted'
         })
     },
-    patchUser: (mockReq: any, mockRes: any) => {
-        return mockRes.status(200).json({
+    patchUser: async (mockReq: any, mockRes: any) => {
+        const { username, password } = mockReq.body;
+        const { user_id } = mockReq.params;
+        let query: string;
 
+        if (typeof user_id !== 'undefined' ||
+            typeof username !== 'undefined' ||
+            typeof password !== 'undefined') {
+            query = buildPatchedQuery('users', mockReq.params.id, mockReq.body) as string;
+
+            const res = db.public.query(query);
+            return mockRes.status(StatusCodes.ACCEPTED).json({
+                message: 'User updated',
+                val: res
+            })
+
+        }
+
+        return mockRes.status(StatusCodes.BAD_REQUEST).json({
+            message: 'Bad Request, please check the body of your request'
         })
     },
     putUser: (mockReq: any, mockRes: any) => {
-        return mockRes.status(200).json({
+        backup.restore();
+        const { user_id, username, password } = mockReq.body;
+        let user_exists: boolean = false;
 
+        if (typeof user_id !== 'undefined' &&
+            typeof username !== 'undefined' &&
+            typeof password !== 'undefined') {
+            user_exists = db.public.query(`SELECT * FROM users WHERE user_id = '${user_id}'`).rowCount > 0;
+        }
+
+        if (user_exists) {
+            db.public.query(`UPDATE users SET username = '${username}', password = '${password}' WHERE user_id = '${user_id}'`);
+
+            return mockRes.status(StatusCodes.ACCEPTED).json({
+                message: 'User successfully updated'
+            })
+        }
+
+        return mockRes.status(StatusCodes.BAD_REQUEST).json({
+            message: 'User not found'
         })
     }
 }

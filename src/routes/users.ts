@@ -12,13 +12,13 @@ export default function (database: any): Router {
         .route('/:id')
         .get(logger, database.getUserById)
         .patch(logger, database.patchUser)
-        .put(logger, database.putUser)
         .delete(logger, database.deleteUserById);
 
     router
         .route('/')
         .get(logger, database.getUsers)
-        .post(logger, database.createUser);
+        .post(logger, database.createUser)
+        .put(logger, database.putUser);
 
     return router;
 }

@@ -21,13 +21,13 @@ type User = {
  */
 const buildPatchedQuery = (table: string, id: number, data: User) => {
     if (Object.keys(data).length === 0) return null;
-    let query = 'UPDATE ${table} SET';
+    let query = `UPDATE ${table} SET`;
     Object.entries(data).forEach(([key, value]) => {
         const valueToSet = typeof data[key as keyof User] === 'string' ? `'${value}'` : value;
         query += ` ${key} = ${valueToSet},`;
     });
     query = query.slice(0, -1);
-    query += ` WHERE id = ${id} RETURNING *`;
+    query += ` WHERE user_id = ${id} RETURNING *`;
     return query;
 }
 
@@ -138,7 +138,7 @@ export const patchUser = asyncHandler(async (req: Request, res: Response) => {
  * @access Private
  */
 export const putUser = asyncHandler(async (req: Request, res: Response) => {
-    await query('UPDATE users SET username=$1, password=$2 WHERE user_id=$3', [req.body.name, req.body.password, req.params.id], (err, results) => {
+    await query('UPDATE users SET username=$1, password=$2 WHERE user_id=$3', [req.body.name, req.body.password, req.body.id], (err, results) => {
         if (err) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: "Internal server error",
