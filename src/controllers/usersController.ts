@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { query, pool } from './../db/psqlConnect';
 import { StatusCodes } from './../util/statusCodes';
 import asyncHandler from "express-async-handler"
+import { QueryResult } from 'pg';
 
 type User = {
     id: number,
@@ -51,6 +52,17 @@ export const getUsers = asyncHandler(async (req: Request, res: Response) => {
     });
 });
 
+async function checkIfUsernameIsTaken(username: string):
+    Promise<void | Error | QueryResult<any> | Response<any, Record<string, any>>> {
+    const val = await query(`SELECT * FROM user WHERE username = $1`, [username], (err, res) => {
+        if (err) {
+            return err;
+        }
+        return res;
+    })
+    return val;
+}
+
 /**
  * @route GET /api/users/:id
  * @access Private
@@ -58,7 +70,12 @@ export const getUsers = asyncHandler(async (req: Request, res: Response) => {
  * @param req Request object
  * @param res Response object
  */
-export const getUserById = asyncHandler(async (req: Request, res: Response) => {
+export const getUserById = asyncHandler(async (req: Request, res: Response): Promise<any> => {
+    if (!/[(0-9)]/.test(req.params.id)) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message: 'Invalid user id'
+        })
+    }
     await query('SELECT * FROM users WHERE user_id = $1', [req.params.id], (err, results) => {
         if (err) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -78,17 +95,27 @@ export const getUserById = asyncHandler(async (req: Request, res: Response) => {
  * @param req Request object
  * @param res Response object
  */
-export const createUser = asyncHandler(async (req: Request, res: Response) => {
-    await query('INSERT INTO users (username, password) VALUES ($1, $2)', [req.body.name, req.body.password], (err, results) => {
-        if (err) {
-            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: "Internal server error",
-                error: err
-            });
-        } else {
-            return res.status(StatusCodes.ACCEPTED).json(results.rows[0]);
-        }
-    });
+export const createUser = asyncHandler(async (req: Request, res: Response): Promise<any> => {
+    // let username_taken: boolean | QueryResult = false;
+
+    if (req.body.username === 'undefined' || req.body.password === 'undefined') {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message: 'Body is missing username or password, are you passing them correctly?'
+        });
+    }
+
+    if (await checkIfUsernameIsTaken(req.body.username))
+
+        await query('INSERT INTO users (username, password) VALUES ($1, $2)', [req.body.name, req.body.password], (err, results) => {
+            if (err) {
+                return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    message: "Internal server error",
+                    error: err
+                });
+            } else {
+                return res.status(StatusCodes.ACCEPTED).json(results.rows[0]);
+            }
+        });
 });
 
 /**

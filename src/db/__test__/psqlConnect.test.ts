@@ -12,9 +12,10 @@ describe('psqlConnect connection tests', () => {
     });
 
     it('query should return result', async () => {
-        await query('SELECT 1', [], (err, res) => {
+        await query('SELECT 1', [], (err, res)  => {
             expect(err).toBeFalsy();
             expect(res).toBeTruthy();
+            return res;
         });
     })
 });

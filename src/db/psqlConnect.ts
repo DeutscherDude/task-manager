@@ -1,5 +1,6 @@
 import { Pool, PoolClient, QueryResult } from 'pg';
 import { provideStringEnvVar } from '../util/envProvider';
+import { Response } from 'express';
 
 const pool = new Pool({
     user: provideStringEnvVar('POSTGRES_USER'),
@@ -23,9 +24,10 @@ pool.on('error', (err, client) => {
  * @param callback - callback function to be called after query is executed
  * @returns - A promise that resolves to the result of the query
  */
-async function query(text: string, params: (string | number)[], callback: (err: Error, res: QueryResult) => void) {
+async function query(text: string, params: (string | number)[],
+    callback: (err: Error, res: QueryResult) => QueryResult<any> | Response | Error): Promise<void | Response | QueryResult | Error> {
     return pool
-        .on('error',(err, client) => {
+        .on('error', (err, client) => {
             return err;
         })
         .query(text, params, (err, res) => {
