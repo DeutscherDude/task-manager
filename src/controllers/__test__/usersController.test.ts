@@ -7,28 +7,20 @@ import {
     patchUser,
     putUser
 } from "../usersController";
-import { NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 describe("usersController routing test", () => {
-    let mockReq: any
-    let mockRes: any;
+    let mockReq: Partial<Request>;
+    let mockRes: Partial<Response>;
     const next: NextFunction = jest.fn();
 
     beforeEach(() => {
         mockReq = {};
-        mockRes = {
-            status: jest.fn((num: Number) => {
-
-            }).mockReturnThis(),
-            json: jest.fn((...r) => {
-                return mockRes;
-            }).mockReturnThis()
-        };
     });
 
     it("should return an array of users", async () => {
         new Promise(() => {
-            getUsers(mockReq, mockRes, next)
+            getUsers(mockReq as Request, mockRes as Response, next)
         }).then(() => {
             expect(mockRes.status).toHaveBeenCalled();
             expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.ACCEPTED);
@@ -37,13 +29,11 @@ describe("usersController routing test", () => {
     });
 
     it('should return a single user', async () => {
-        mockReq = {
-            params: {
-                id: 1
-            }
+        mockReq.params = {
+            id: '1'
         }
         new Promise(() => {
-            getUserById(mockReq, mockRes, next)
+            getUserById(mockReq as Request, mockRes as Response, next)
         }).then(() => {
             expect(mockRes.status).toHaveBeenCalled();
             expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.ACCEPTED);
@@ -66,7 +56,7 @@ describe("usersController routing test", () => {
         }
 
         new Promise(() => {
-            createUser(mockReq, mockRes, next);
+            createUser(mockReq as Request, mockRes as Response, next);
         }).then(() => {
             expect(mockRes.status).toHaveBeenCalled();
             expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.CREATED);
@@ -81,7 +71,7 @@ describe("usersController routing test", () => {
             }
         }
         new Promise(() => {
-            deleteUserById(mockReq, mockRes, next);
+            deleteUserById(mockReq as Request, mockRes as Response, next);
         }).then(() => {
             expect(mockRes.status).toHaveBeenCalled();
             expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.ACCEPTED);
@@ -91,7 +81,7 @@ describe("usersController routing test", () => {
     it('should patch a user', async() => {
         mockReq = {
             params: {
-                user_id: 1
+                user_id: '1'
             },
             body: {
                 username: 'Gejwid',
@@ -99,7 +89,7 @@ describe("usersController routing test", () => {
             }
         }
         new Promise(() => {
-            patchUser(mockReq, mockRes, next);
+            patchUser(mockReq as Request, mockRes as Response, next);
         }).then(() => {
             expect(mockRes.status).toHaveBeenCalled();
             expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.ACCEPTED);
@@ -115,7 +105,7 @@ describe("usersController routing test", () => {
     it('should put a user', async() => {
         mockReq = {
             params: {
-                user_id: 1
+                user_id: '1'
             },
             body: {
                 username: 'Gejwid',
@@ -123,7 +113,7 @@ describe("usersController routing test", () => {
             }
         }
         new Promise(() => {
-            putUser(mockReq, mockRes, next);
+            putUser(mockReq as Request, mockRes as Response, next);
         }
         ).then(() => {
             expect(mockRes.status).toHaveBeenCalled();

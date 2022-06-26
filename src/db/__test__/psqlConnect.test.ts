@@ -8,8 +8,6 @@ describe('psqlConnect connection tests', () => {
             if (err) {
                 done(err);
                 expect(err).toBeUndefined();
-                console.log(err);
-                throw err;
             }
             done(client);
             expect(client).toBeDefined();

@@ -1,39 +1,32 @@
-// import { NextFunction } from 'express';
+import { Request, Response } from 'express';
 // import { StatusCodes } from '../../util/statusCodes';
-// import {
-//     getTasks,
-//     getTaskById,
-//     createTask,
-//     deleteTaskById,
-//     patchTask,
-//     putTask
-// } from '../tasksController';
+import {
+    getTasks,
+    // getTaskById,
+    // createTask,
+    deleteTaskById,
+    // patchTask,
+    // putTask
+} from '../tasksController';
 
 describe('tasksController tests', () => {
-    // let mockReq: any;
-    // let mockRes: any;
+    let mockReq: Partial<Request>;
+    let mockRes: Partial<Response>;
     // const next: NextFunction = jest.fn();
 
 
-    // beforeEach(async () => {
-    //     mockReq = {};
-    //     mockRes = {
-    //         status: jest.fn((num: Number) => {
-
-    //         }).mockReturnThis(),
-    //         json: jest.fn((...r) => {
-
-    //         }).mockReturnThis()
-    //     };
-    // });
+    beforeEach(async () => {
+        mockReq = {};
+        mockRes = {
+            status: jest.fn().mockReturnValue({
+                json: jest.fn().mockReturnValue({})
+            })
+        }
+    });
 
     it('returns all tasks from the db', async () => {
-        // await getTasks(mockReq, mockRes);
-            // .then(() => {
-            //     expect(mockRes.status).toHaveBeenCalledWith(StatusCodes.ACCEPTED);
-            //     expect(mockRes.json).toHaveBeenCalled();
-            // })
-        expect(1+1).toEqual(2);
+        await getTasks(mockReq as Request, mockRes as Response).then( (result: any) => {
+        });
     });
 
     // it('returns a task by given id', async () => {
@@ -63,9 +56,12 @@ describe('tasksController tests', () => {
     //     // })
     // });
 
-    // it('DELETE a task by ID', async () => {
-    //     // await deleteTaskById(mockReq, mockRes, next);
-    // });
+    it('DELETE a task by ID', async () => {
+        await deleteTaskById(mockReq, mockRes).then((res: any) => {
+            console.log(res);
+        });
+
+    });
 
     // it('PATCH a task', async () => {
     //     // await patchTask(mockReq, mockRes, next);

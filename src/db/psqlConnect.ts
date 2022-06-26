@@ -27,10 +27,8 @@ pool.on('error', (err, client) => {
 async function query(text: string, params: (string | number)[],
     callback: (err: Error, res: QueryResult) => QueryResult<any> | Response | Error): Promise<void | Response | QueryResult | Error> {
     return pool
-        .on('error', (err, client) => {
-            return err;
-        })
         .query(text, params, (err, res) => {
+            
             callback(err, res);
         })
 };

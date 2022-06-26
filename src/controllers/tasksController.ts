@@ -22,17 +22,15 @@ type Task = {
  * @param res Response object
  */
 export const getTasks = asyncHandler(async (req: Request, res: Response) => {
-    new Promise<QueryResult<Task>>(() => {
-        query('SELECT * FROM tasks;', [], (err, results: QueryResult<Task>) => {
-            if (err) {
-                return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                    message: "Internal server error",
-                    error: err
-                });
-            } else {
-                return res.status(StatusCodes.ACCEPTED).json(results.rows);
-            }
-        })
+    await query('SELECT * FROM tasks;', [], (err, results: QueryResult<Task>) => {
+        if (err) {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                message: "Internal server error",
+                error: err
+            });
+        } else {
+            return res.status(StatusCodes.ACCEPTED).json(results.rows);
+        }
     });
 });
 
